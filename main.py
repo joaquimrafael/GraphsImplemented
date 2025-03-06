@@ -54,12 +54,45 @@ class TGrafoMatrizD(gm.Grafo):
                 if self.adj[i][j] != self.adj[j][i]:
                     return 0
         return 1
-
+    
+    # EX13
+    def isComplete(self):
+        for i in range(self.n):
+            for j in range(self.n):
+                if i == j:
+                    continue
+                if self.adj[i][j] == 0:
+                    return 0
+        return 1
+    
+    # EX14
+    def complement(self):
+        gComplement = TGrafoMatrizD(self.n)
+        for i in range(self.n):
+            for j in range(self.n):
+                if self.adj[i][j] == 0:
+                    gComplement.insereA(i,j)
+        return gComplement
 
 
 # Extensão da classe de Grafo Nao Direcionado em Matriz de Adjacencia 
 class TGrafoMatrizND(gm.Grafo):
-    pass
+    
+    # EX15
+    def isConnected(self):
+        visited = [0]* self.n
+        stack = p.Pilha(self.n)
+        stack.push(0)
+        visited[0] = 1
+        
+        while not stack.isEmpty():
+            v = stack.pop()
+            for j in range(self.n):
+                if self.adj[v][j] == 1 and visited[j] == 0:
+                    stack.push(j)
+                    visited[j] = 1
+        
+        return int(all(visited))
 
 # Extensão da classe de Grafo Direcionado em Lista de Adjacencia
 class TGrafoListaD(gm.Grafo):
@@ -109,12 +142,46 @@ def main():
     
     print("\nO grafo 2 é simétrico?(1=S/0=N) ->", gm_dir2.isSymetric())
     
+    gm_dir3 = TGrafoMatrizD(3)
+    gm_dir3.insereA(1,2)
+    gm_dir3.insereA(1,0)
+    gm_dir3.insereA(2,1)
+    gm_dir3.insereA(2,0)
+    gm_dir3.insereA(0,1)
+    gm_dir3.insereA(0,2)
+    
+    print("\nGrafo Direcionado 3:")
+    gm_dir3.show()
+    
+    print("\nO grafo 3 é completo?(1=S/0=N) ->", gm_dir3.isComplete())
+    
+    print("\nGrafo Complementar do Grafo 1:")
+    gm_dir.complement().show()
+    
     
     print("\n")
     
-    # print("\nTeste: TGrafoMatrizNaoDirecionado")
-    # gm_nd = TGrafoMatrizND(5)
-    # print(gm_nd)
+    print("\nTeste: TGrafoMatrizNaoDirecionado")
+    gm_nd = TGrafoMatrizND(5)
+    gm_nd.insereA(1,3)
+    gm_nd.insereA(1,4)
+    gm_nd.insereA(3,4)
+    gm_nd.insereA(2,1)
+    
+    print("\nGrafo Não Direcionado 1:")
+    gm_nd.show()
+    
+    print("\nO grafo 1 é conexo?(1=S/0=N) ->", gm_nd.isConnected())
+    
+    gm_nd2 = TGrafoMatrizND(3)
+    gm_nd2.insereA(1,2)
+    gm_nd2.insereA(1,0)
+    gm_nd2.insereA(2,0)
+    
+    print("\nGrafo Não Direcionado 2:")
+    gm_nd2.show()
+    
+    print("\nO grafo 2 é conexo?(1=S/0=N) ->", gm_nd2.isConnected())
     
     # print("\nTeste: TGrafoListaDirecionado")
     # gl_dir = TGrafoListaD(5)
