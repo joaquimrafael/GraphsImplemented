@@ -173,6 +173,29 @@ class TGrafoMatrizD(gm.Grafo):
                         reduced.adj[comp[v]][comp[w]] = 1
                         reduced.m += 1
         return reduced
+    
+class TGrafoMatrizRotuladoD(gm.Grafo):
+    def __init__(self,n):
+        super().__init__(n)
+        self.adj = [[0.0 for _ in range(n)] for _ in range(n)]
+    
+    def insereA(self, v, w, peso: float):
+        if self.adj[v][w] == 0.0:
+            self.adj[v][w] = peso
+            self.m += 1
+    
+    def removeA(self, v, w):
+        if self.adj[v][w] != 0.0:
+            self.adj[v][w] = 0.0
+            self.m -= 1
+
+    def show(self):
+        print(f"\n n: {self.n} m: {self.m}\n")
+        for i in range(self.n):
+            for j in range(self.n):
+                print(f"{self.adj[i][j]:6.2f}", end= " ")
+            print()
+        print("\nfim da impressão do grafo.")
 
 
 
@@ -238,6 +261,65 @@ class TGrafoListaD(gl.Grafo):
         for i in range(self.n):
             self.listaAdj[i].reverse()
         return self
+    
+    # EX25
+    def isSource(self, v: int) -> int:
+        in_degree = 0
+        for i in range(self.n):
+            if v in self.listaAdj[i]:
+                in_degree += 1
+        out_degree = len(self.listaAdj[v])
+        if in_degree == 0 and out_degree > 0:
+            return 1
+        else:
+            return 0
+        
+    # EX26
+
+    def isSink(self, v: int) -> int:
+        in_degree = 0
+
+        for i in range(self.n):
+            if v in self.listaAdj[i]:
+                in_degree += 1
+        out_degree = len(self.listaAdj[v])
+        if in_degree > 0 and out_degree == 0:
+            return 1
+        else:
+            return 0
+        
+    # EX27
+
+    def isSymetric(self) -> int:
+
+        for v in range(self.n):
+            for w in self.listaAdj[v]:
+                if v not in self.listaAdj[w]:
+                    return 0
+        return 1
+    
+    # EX30
+
+    def remove(self, v: int):
+
+        for i in range(self.n):
+            if i!= v:
+                nova_lista = []
+                for w in self.listaAdj[i]:
+                    if w == v:
+                        self.m -= 1
+                    elif w > v:
+                        nova_lista.append(w-1)
+                    else:
+                        nova_lista.append(w)
+                self.listaAdj[i] = nova_lista
+
+        num_outgoing = len(self.listaAdj[v])
+        self.listaAdj.pop(v)
+        self.n -= 1
+        self.m -= num_outgoing
+
+        return self        
 
 # Extensão da classe de Grafo Nao Direcionado em Lista de Adjacencia
 class TGrafoListaND(gl.Grafo):
@@ -526,7 +608,90 @@ def main():
     gl_nd.show()
     print("\nTeste: Remoção de vértice")
     gl_nd.remove(0).show()
+
+    # EX18 Teste
+
+    print("Teste: Grafo Direcionado Rotulado (Matriz de Adjacência)")
+
+    g = TGrafoMatrizRotuladoD(5)
+    g.insereA(0, 1, 2.5)
+    g.insereA(0, 2, 1.75)
+    g.insereA(1, 3, 3.0)
+    g.insereA(2, 3, 4.25)
+    g.insereA(3, 4, 0.5)
+
+    g.show()
+
+    # EX25 Teste
+
+    g = TGrafoListaD(4)
+    g.insereA(0, 1)
+    g.insereA(0, 2)
+    g.insereA(1, 2)
+    g.insereA(2, 3)
+
+    print("\nGrafo (lista de adjacência):")
+    g.show()
+
+    for v in range(g.n):
+        if g.isSource(v):
+            print(f"Vértice {v} é fonte.")
+        else:
+            print(f"Vértice {v} NÃO é fonte.")
+
+    # EX26 Teste
+
+    g = TGrafoListaD(4)
+    g.insereA(0, 3)
+    g.insereA(1, 3)
+    g.insereA(2, 3)
+
+    g.insereA(0, 1)
+    g.insereA(1, 2)
+
+    g.show()
+
+    if g.isSink(3):
+        print("\nVértice 3 é soverdouro.")
+    else:
+        print("\nVértice 3 NÃO é soverdouro.")
+
+    # EX27 Teste
+
+    g = TGrafoListaD(4)
+    g.insereA(0, 1)
+    g.insereA(1, 0)
+    g.insereA(0, 2)
+    g.insereA(2, 0)
+    g.insereA(1, 2)
+    g.insereA(2, 1)
+
+    g.insereA(3, 0)
+
+    g.show()
+
+    if g.isSymetric():
+        print("\nO grafo é simétrico.")
+    else:
+        print("\nO grafo NÃO é simétrico.")
     
+    # EX 30 Teste
+
+    g = TGrafoListaD(5)
+    g.insereA(0, 1)
+    g.insereA(0, 3)
+    g.insereA(1, 2)
+    g.insereA(2, 4)
+    g.insereA(3, 4)
+    g.insereA(4, 0)
+
+    print("Grafo original:")
+    g.show()
+
+    g.remove(2)
+
+    print("\nGrafo após remover o vértice 2:")
+    g.show()
 
 if __name__ == '__main__':
     main()
