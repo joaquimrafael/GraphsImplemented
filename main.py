@@ -220,19 +220,74 @@ class TGrafoMatrizND(gm.Grafo):
         
         return int(all(visited))
 
-    
 
 # Extensão da classe de Grafo Direcionado em Lista de Adjacencia
-class TGrafoListaD(gm.Grafo):
-    pass
+class TGrafoListaD(gl.Grafo):
+    # EX22
+    def isEqual(self, g):
+        if self.n != g.n or self.m != g.m:
+            return 0
+        else:
+            for i in range(self.n):
+                if set(self.listaAdj[i]) != set(g.listaAdj[i]):
+                    return 0
+        return 1
+    
+    # EX 23
+    def invert(self):
+        for i in range(self.n):
+            self.listaAdj[i].reverse()
+        return self
 
 # Extensão da classe de Grafo Nao Direcionado em Lista de Adjacencia
-class TGrafoListaND(gm.Grafo):
-    pass
+class TGrafoListaND(gl.Grafo):
+    # EX 23
+    def invert(self):
+        for i in range(self.n):
+            self.listaAdj[i].reverse()
+        return self
+    
+    # EX 29
+    def remove(self, v):
+        for i in range(self.n):
+            new_list = []
+            for j in self.listaAdj[i]:
+                if j == v:
+                    self.m -= 1
+                elif j > v:
+                    new_list.append(j - 1)
+                else:
+                    new_list.append(j)
+            self.listaAdj[i] = new_list
+                
+        self.listaAdj.pop(v)
+        self.n -= 1
+        return self
 
+# EX23
+@staticmethod
+def fromMatrixToList(matrix: gm.Grafo):
+    g = TGrafoListaD(matrix.n)
+    for i in range(matrix.n):
+        for j in range(matrix.n):
+            if matrix.adj[i][j] > 0:
+                g.insereA(i,j)
+    return g
 
+@staticmethod
+def fromListToMatrix(lista: gl.Grafo):
+    g = TGrafoMatrizD(lista.n)
+    for i in range(lista.n):
+        for j in lista.listaAdj[i]:
+            g.insereA(i,j)
+    return g
+        
+    
+    
 def main():    
+    
     print("Testes: TGrafoMatrizDirecionado\n")
+    
     gm_dir = TGrafoMatrizD(5)
     gm_dir.insereA(1,3)
     gm_dir.insereA(1,4)
@@ -243,18 +298,24 @@ def main():
     print("Grafo Direcionado 1:")
     gm_dir.show()
 
+    # Teste EX01
     print("\nGrau de entrada do vértice 4:", gm_dir.inDegree(4))
     
+    # Teste EX02    
     print("\nGrau de saída do vértice 1:", gm_dir.outDegree(1))
     
+    # Teste EX03
     print("\nGrau do vértice:", gm_dir.degree(1))
     
+    # Teste EX04
     print("\nVértice 2 é fonte?(1=S/0=N) ->", gm_dir.isSource(2))
     print("\nVértice 1 é fonte?(1=S/0=N) ->", gm_dir.isSource(1))
     
+    # Teste EX05
     print("\nVértice 3 é sorvedouro?(1=S/0=N) ->", gm_dir.isSink(3))
     print("\nVértice 4 é sorvedouro?(1=S/0=N) ->", gm_dir.isSink(4))
     
+    # Teste EX06
     print("\nO grafo 1 é simétrico?(1=S/0=N) ->", gm_dir.isSymetric())
     
     gm_dir2 = TGrafoMatrizD(4)
@@ -270,6 +331,7 @@ def main():
     
     print("\nO grafo 2 é simétrico?(1=S/0=N) ->", gm_dir2.isSymetric())
     
+    # Teste EX13
     gm_dir3 = TGrafoMatrizD(3)
     gm_dir3.insereA(1,2)
     gm_dir3.insereA(1,0)
@@ -281,14 +343,23 @@ def main():
     print("\nGrafo Direcionado 3:")
     gm_dir3.show()
     
+    print("\nO grafo 1 é completo?(1=S/0=N) ->", gm_dir.isComplete())
     print("\nO grafo 3 é completo?(1=S/0=N) ->", gm_dir3.isComplete())
     
+    # Teste EX14
     print("\nGrafo Complementar do Grafo 1:")
     gm_dir.complement().show()
     
+    gm_ndir = TGrafoMatrizD(3)
+    gm_ndir.insereA(1,2)
+    gm_ndir.insereA(1,0)
+    gm_ndir.insereA(2,1)
     
-    print("\n")
+    print("\nGrafo Complementar do Grafo ND:")
+    gm_ndir.show()
+    gm_ndir.complement().show()
     
+    # Teste EX15    
     print("\nTeste: TGrafoMatrizNaoDirecionado")
     gm_nd = TGrafoMatrizND(5)
     gm_nd.insereA(1,3)
@@ -390,13 +461,72 @@ def main():
     print("\nGrafo reduzido:")
     reduced.show()
 
-    # print("\nTeste: TGrafoListaDirecionado")
-    # gl_dir = TGrafoListaD(5)
-    # print(gl_dir)
+    # EX22 Teste
+    gl_d = TGrafoListaD(4)
+    gl_d.insereA(0, 2)
+    gl_d.insereA(0, 1)
+    gl_d.insereA(1, 2)
+    gl_d.insereA(2, 3)
+
+    gl2_d = TGrafoListaD(4)
+    gl2_d.insereA(0, 1)
+    gl2_d.insereA(0, 2)
+    gl2_d.insereA(1, 2)
+    gl2_d.insereA(2, 3)
+
+    print("Grafo gl_d:")
+    gl_d.show()
+    print("\nGrafo gl2_d:")
+    gl2_d.show()
+
+    if gl_d.isEqual(gl2_d):
+        print("\nOs grafos gl1_d e gl2_d são iguais.")
+    else:
+        print("\nOs grafos gl1_d e gl2_d NÃO são iguais.")
+        
+    # EX23 Teste
+    print("\nTeste: fromMatrixToList")
+    glm_d = fromMatrixToList(gm_dir)
     
-    # print("\nTeste: TGrafoListaNaoDirecionado")
-    # gl_nd = TGrafoListaND(5)
-    # print(gl_nd)
+    glm_d.show()
+    
+    print("\nTeste: fromListToMatrix")
+    gml_d = fromListToMatrix(gl_d)
+    
+    gml_d.show()
+    
+    # EX24 Teste
+    glTeste = TGrafoListaD(4)
+    glTeste.insereA(0, 1)
+    glTeste.insereA(2, 3)
+    glTeste.insereA(1, 2)
+    glTeste.insereA(0, 3)
+    glTeste.insereA(1 ,3)
+    glTeste.show()
+    glTeste.invert().show()
+    
+    print("\nTeste: TGrafoListaNaoDirecionado")
+    gl_nd = TGrafoListaND(5)
+    gl_nd.insereA(0,1)
+    gl_nd.insereA(0,2)
+    gl_nd.insereA(1,2)
+    gl_nd.insereA(3,4)
+    gl_nd.insereA(3,0)
+    gl_nd.insereA(3,1)
+    gl_nd.insereA(4,0)
+    
+    print("Grafo Não Direcionado 1:")
+    gl_nd.show()
+    
+    print("\nGrafo invertido:")
+    gl_nd.invert().show()
+    
+    # EX29 Teste
+    print("Grafo Não Direcionado:")
+    gl_nd.show()
+    print("\nTeste: Remoção de vértice")
+    gl_nd.remove(0).show()
+    
 
 if __name__ == '__main__':
     main()
