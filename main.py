@@ -67,6 +67,16 @@ class TGrafoMatrizD(gm.Grafo):
             v, w = map(int,line.split())
             matriz[v][w] = 1
         return matriz
+    
+    # EX11
+    def remove(self, v: int):
+        self.n -= 1
+
+        self.adj.pop(v)
+        for i in range(self.n):
+            self.adj[i].pop(v)
+
+        return self
 
     # EX13
     def isComplete(self):
@@ -226,6 +236,25 @@ class TGrafoMatrizND(gm.Grafo):
     # EX09
     def degree(self, v: int) -> int:
         return sum(self.adj[v])
+    
+    # EX11
+    def remove(self, v: int):
+        self.n -= 1
+
+        self.adj.pop(v)
+
+        for i in range(self.n):
+            self.adj[i].pop(v)
+
+        return self
+    
+    # EX12
+    def isComplete(self):
+        for i in range(self.n):
+            for j in range(i+1, self.n):
+                if self.adj[i][j] == 0:
+                    return 0
+        return 1
 
     # EX15
     def isConnected(self):
@@ -246,6 +275,26 @@ class TGrafoMatrizND(gm.Grafo):
 
 # Extensão da classe de Grafo Direcionado em Lista de Adjacencia
 class TGrafoListaD(gl.Grafo):
+
+    #EX19
+    def inDegree(self, v):
+        degree = 0
+        for i in range (len(self.listaAdj)):
+            if v in self.listaAdj[i]:
+                degree+=1
+
+        return degree
+    
+    #EX20
+    def outDegree(self,v):
+        degree = 0
+        
+        return len(self.listaAdj[v])
+    
+    #EX21
+    def degree(self, v):
+        return self.inDegree(v)+self.outDegree(v)
+
     # EX22
     def isEqual(self, g):
         if self.n != g.n or self.m != g.m:
@@ -298,6 +347,22 @@ class TGrafoListaD(gl.Grafo):
                     return 0
         return 1
     
+    # EX28
+    @staticmethod
+    def readGraphFromFile(filename: str):
+        with open(filename, 'r') as file:
+            lines = [line.strip() for line in file if line.strip()]
+        V = int(lines[0])
+        A = int(lines[1])
+
+        listaAdj = {i: [] for i in range(V)}
+
+        for line in lines[2:]:
+            v, w = map(int, line.split())
+            listaAdj[v].append(w)
+
+        return listaAdj
+        
     # EX30
 
     def remove(self, v: int):
@@ -319,7 +384,15 @@ class TGrafoListaD(gl.Grafo):
         self.n -= 1
         self.m -= num_outgoing
 
-        return self        
+        return self    
+
+    #EX 31
+    def isComplete(self):
+        for v in range(len(self.listaAdj)):
+            if len(self.listaAdj[v]) != self.n - 1:
+                return 0
+
+        return 1    
 
 # Extensão da classe de Grafo Nao Direcionado em Lista de Adjacencia
 class TGrafoListaND(gl.Grafo):
@@ -345,6 +418,14 @@ class TGrafoListaND(gl.Grafo):
         self.listaAdj.pop(v)
         self.n -= 1
         return self
+    
+    #EX 31
+    def isComplete(self):
+        for v in range(len(self.listaAdj)):
+            if len(self.listaAdj[v]) != self.n - 1:
+                return 0
+
+        return 1 
 
 # EX23
 @staticmethod
@@ -412,6 +493,20 @@ def main():
     gm_dir2.show()
     
     print("\nO grafo 2 é simétrico?(1=S/0=N) ->", gm_dir2.isSymetric())
+
+    # Teste EX12
+    gm_ndir3 = TGrafoMatrizND(3)
+    gm_ndir3.insereA(1,2)
+    gm_ndir3.insereA(1,0)
+    gm_ndir3.insereA(2,1)
+    gm_ndir3.insereA(2,0)
+    gm_ndir3.insereA(0,1)
+    gm_ndir3.insereA(0,2)
+    
+    print("\nGrafo não Direcionado 3:")
+    gm_ndir3.show()
+    
+    print("\nO grafo 3 é completo?(1=S/0=N) ->", gm_ndir3.isComplete())
     
     # Teste EX13
     gm_dir3 = TGrafoMatrizD(3)
@@ -474,6 +569,17 @@ def main():
     print("Matriz de Adjacência: ")
     for linha in matriz:
         print(linha)
+
+    # EX28 Teste
+
+    print("Starting main.py")
+
+    filename = "grafo.txt"
+    listaAdj = TGrafoListaD.readGraphFromFile(filename)
+
+    print("Lista de Adjacência: ")
+    for v in listaAdj:
+        print(f"{v} -> {', '.join(map(str, listaAdj[v]))}")
 
     # EX08 Teste
 
@@ -542,6 +648,23 @@ def main():
     reduced = gt.reducedGraph()
     print("\nGrafo reduzido:")
     reduced.show()
+
+    # EX19 Teste
+    gld = TGrafoListaD(5)
+
+    gld.insereA(1,3)
+    gld.insereA(1,4)
+    gld.insereA(3,4)
+    gld.insereA(2,1)
+    gld.insereA(2,3)
+
+    print("\nGrau de entrada do vértice 4:", gld.inDegree(4))
+    
+    # Teste EX20   
+    print("\nGrau de saída do vértice 1:", gld.outDegree(1))
+    
+    # Teste EX21
+    print("\nGrau do vértice:", gld.degree(1))
 
     # EX22 Teste
     gl_d = TGrafoListaD(4)
@@ -692,6 +815,65 @@ def main():
 
     print("\nGrafo após remover o vértice 2:")
     g.show()
+
+    # EX 11 teste 
+
+    gd = TGrafoMatrizD(5)
+    gd.insereA(0, 1)
+    gd.insereA(0, 3)
+    gd.insereA(1, 2)
+    gd.insereA(2, 4)
+    gd.insereA(3, 4)
+    gd.insereA(4, 0)
+
+    print("\nGrafo original:")
+    gd.show
+
+    gd.remove(2)
+    print("\nGrafo após remover o vértice 2:")
+    gd.show()
+
+    gnd = TGrafoMatrizD(5)
+    gnd.insereA(0, 1)
+    gnd.insereA(0, 3)
+    gnd.insereA(1, 2)
+    gnd.insereA(2, 4)
+    gnd.insereA(3, 4)
+    gnd.insereA(4, 0)
+
+    print("\nGrafo original:")
+    gnd.show()
+
+    gnd.remove(2)
+    print("\nGrafo após remover o vértice 2:")
+    gnd.show()
+
+    # Teste EX31
+    gm_dir31 = TGrafoListaD(3)
+    gm_dir31.insereA(1,2)
+    gm_dir31.insereA(1,0)
+    gm_dir31.insereA(2,1)
+    gm_dir31.insereA(2,0)
+    gm_dir31.insereA(0,1)
+    gm_dir31.insereA(0,2)
+    
+    print("\nGrafo não Direcionado 3:")
+    gm_dir31.show()
+    
+    print("\nO grafo 3 é completo?(1=S/0=N) ->", gm_dir31.isComplete())
+
+    gm_ndir31 = TGrafoListaND(3)
+    gm_ndir31.insereA(1,2)
+    gm_ndir31.insereA(1,0)
+    gm_ndir31.insereA(2,1)
+    gm_ndir31.insereA(2,0)
+    gm_ndir31.insereA(0,1)
+    gm_ndir31.insereA(0,2)
+    
+    print("\nGrafo não Direcionado 3:")
+    gm_ndir31.show()
+    
+    print("\nO grafo 3 é completo?(1=S/0=N) ->", gm_ndir31.isComplete())
 
 if __name__ == '__main__':
     main()
