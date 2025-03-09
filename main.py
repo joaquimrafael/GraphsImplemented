@@ -70,11 +70,15 @@ class TGrafoMatrizD(gm.Grafo):
     
     # EX11
     def remove(self, v: int):
-        self.n -= 1
+        totalA = sum(self.adj[v])
 
         self.adj.pop(v)
-        for i in range(self.n):
+        for i in range(len(self.adj)):
+            totalA += self.adj[i][v]
             self.adj[i].pop(v)
+
+        self.n -= 1
+        self.m -= totalA
 
         return self
 
@@ -239,12 +243,17 @@ class TGrafoMatrizND(gm.Grafo):
     
     # EX11
     def remove(self, v: int):
-        self.n -= 1
+        totalA = sum(self.adj[v])
 
         self.adj.pop(v)
 
-        for i in range(self.n):
+        for i in range(len(self.adj)):
+            if self.adj[i][v] == 1:
+                totalA += 1
             self.adj[i].pop(v)
+
+        self.n -= 1
+        self.m -= totalA//2
 
         return self
     
@@ -818,35 +827,20 @@ def main():
 
     # EX 11 teste 
 
-    gd = TGrafoMatrizD(5)
-    gd.insereA(0, 1)
-    gd.insereA(0, 3)
-    gd.insereA(1, 2)
-    gd.insereA(2, 4)
-    gd.insereA(3, 4)
-    gd.insereA(4, 0)
+    gd11 = TGrafoMatrizD(5)
+    gd11.insereA(0, 1)
+    gd11.insereA(0, 3)
+    gd11.insereA(1, 2)
+    gd11.insereA(2, 4)
+    gd11.insereA(3, 4)
+    gd11.insereA(4, 0)
 
     print("\nGrafo original:")
-    gd.show
+    gd11.show()
 
-    gd.remove(2)
+    gd11.remove(2)
     print("\nGrafo após remover o vértice 2:")
-    gd.show()
-
-    gnd = TGrafoMatrizD(5)
-    gnd.insereA(0, 1)
-    gnd.insereA(0, 3)
-    gnd.insereA(1, 2)
-    gnd.insereA(2, 4)
-    gnd.insereA(3, 4)
-    gnd.insereA(4, 0)
-
-    print("\nGrafo original:")
-    gnd.show()
-
-    gnd.remove(2)
-    print("\nGrafo após remover o vértice 2:")
-    gnd.show()
+    gd11.show()
 
     # Teste EX31
     gm_dir31 = TGrafoListaD(3)
@@ -857,7 +851,7 @@ def main():
     gm_dir31.insereA(0,1)
     gm_dir31.insereA(0,2)
     
-    print("\nGrafo não Direcionado 3:")
+    print("\nGrafo Direcionado 3:")
     gm_dir31.show()
     
     print("\nO grafo 3 é completo?(1=S/0=N) ->", gm_dir31.isComplete())
